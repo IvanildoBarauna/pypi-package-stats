@@ -1,18 +1,24 @@
+from typing import Tuple, Optional
 from google.cloud import secretmanager
 from src.application.ports.secret_manager_interface import ISecretManager
 
 
 class SecretManagerAdapter(ISecretManager):
-    def __init__(self, secret_id: str):
-        self.secret_id = secret_id
+    """
+    A class used to represent a SecretManagerAdapter
+    """
 
-    def get_secret_value(self) -> str:
-        secret_client = secretmanager.SecretManagerServiceClient()
+    def __init__(self) -> None:
+        self.secret_client = secretmanager.SecretManagerServiceClient()
 
+    def get_secret_value(self, secret_id: str) -> Tuple[Optional[str], str]:
         request = {
-            "name": f"projects/ivanildobarauna/secrets/{self.secret_id}/versions/latest",
+            "name": f"projects/ivanildobarauna/secrets/{secret_id}/versions/latest",
         }
 
-        secret_request = secret_client.access_secret_version(request=request)
+        try:
+            secret_request = self.secret_client.access_secret_version(request=request)
+        except ValueError as e:
+            return str(e), ""
 
-        return secret_request.payload.data.decode("UTF-8")
+        return None, secret_request.payload.data.decode("UTF-8")

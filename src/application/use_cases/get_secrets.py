@@ -1,12 +1,25 @@
 from src.application.services.get_secret_value_service import GetSecretValueService
 from src.adapter.secret_manager_adapter import SecretManagerAdapter
-from src.application.utils.singleton import Singleton
 
 
 class GetSecretValueUseCase:
-    def __init__(self, secret_id: str) -> None:
-        self.repository = SecretManagerAdapter(secret_id=secret_id)
-        self.secret_service = GetSecretValueService(secret_manager=self.repository)
+    """
+    A class used to represent a GetSecretValueUseCase
+    """
 
-    def get(self) -> str:
-        return self.secret_service.get()
+    def __init__(self) -> None:
+        self.secretmanager = SecretManagerAdapter()
+        self.get_secret_value_service = GetSecretValueService(
+            secret_manager=self.secretmanager
+        )
+
+    def get(self, secret_id: str) -> str:
+        """
+        Get secret value
+        """
+        err, secret_value = self.get_secret_value_service.get(secret_id=secret_id)
+
+        if err:
+            raise Exception(err)
+
+        return secret_value
