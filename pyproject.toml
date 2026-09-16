@@ -30,6 +30,9 @@ opentelemetry-instrumentation-requests = "^0.50b0"
 pytest = "^9.0.3"
 coverage = "^7.7.1"
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
